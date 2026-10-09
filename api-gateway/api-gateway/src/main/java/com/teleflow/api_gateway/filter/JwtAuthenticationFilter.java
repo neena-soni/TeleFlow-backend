@@ -45,9 +45,11 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
             String username = jwtUtils.extractUsername(token);
             List<String> roles = jwtUtils.extractRoles(token);
             String rolesStr = String.join(",", roles);
+            String primaryRole = !roles.isEmpty() ? roles.get(0) : "";
 
             ServerHttpRequest mutatedRequest = request.mutate()
                     .header("X-User-Id", username != null ? username : "")
+                    .header("X-User-Role", primaryRole)
                     .header("X-User-Roles", rolesStr)
                     .build();
 
