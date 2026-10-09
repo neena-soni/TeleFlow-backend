@@ -1,0 +1,21 @@
+services:
+  # ─── Apache Kafka (KRaft mode: Fast, No Zookeeper required) ──────────────
+  kafka:
+    image: bashj79/kafka-kraft:latest
+    container_name: teleflow-kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+
+  # ─── Temporal.io All-In-One Dev Server ──────────────────────────────────
+  temporal:
+    image: temporalio/admin-tools:latest
+    container_name: teleflow-temporal
+    entrypoint: ["temporal", "server", "start-dev", "--ip", "0.0.0.0", "--ui-port", "8233"]
+    ports:
+      - "7233:7233"   # Temporal gRPC frontend for Spring Boot
+      - "8233:8233"   # Temporal Web UI for monitoring & judges
