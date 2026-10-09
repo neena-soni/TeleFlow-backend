@@ -50,6 +50,7 @@ services:
       - "8086:8086"
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - TELEFLOW_SERVICES_ORCHESTRATOR_BASE_URL=http://orchestrator-server:8081
     depends_on:
       - eureka-server
     networks:
@@ -130,7 +131,12 @@ services:
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - TEMPORAL_SERVICE_ADDRESS=temporal:7233
+      - TEMPORAL_SERVICE_TARGET=temporal:7233
+      - TELEFLOW_SERVICES_INVENTORY_BASE_URL=http://inventory-service:8082
+      - TELEFLOW_SERVICES_NETWORK_BASE_URL=http://network-service:8083
+      - TELEFLOW_SERVICES_BILLING_BASE_URL=http://billing-service:8084
+      - TELEFLOW_SERVICES_NOTIFICATION_BASE_URL=http://notification-service:8085
+      - TELEFLOW_WEBSOCKET_ALLOWED_ORIGINS=*
     depends_on:
       - eureka-server
       - kafka
@@ -148,6 +154,12 @@ services:
       - "8080:8080"
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - USER_SERVICE_URL=http://user-service:8086
+      - ORCHESTRATOR_URL=http://orchestrator-server:8081
+      - INVENTORY_URL=http://inventory-service:8082
+      - NETWORK_URL=http://network-service:8083
+      - BILLING_URL=http://billing-service:8084
+      - NOTIFICATION_URL=http://notification-service:8085
     depends_on:
       - eureka-server
       - orchestrator-server

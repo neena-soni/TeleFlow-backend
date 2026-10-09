@@ -22,7 +22,7 @@ jwt:
 teleflow:
   services:
     orchestrator:
-      base-url: http://localhost:8081
+      base-url: ${ORCHESTRATOR_URL:http://orchestrator-server:8081}
 
 eureka:
   client:

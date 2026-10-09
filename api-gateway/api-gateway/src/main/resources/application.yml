@@ -10,10 +10,8 @@ spring:
         add-to-simple-url-handler-mapping: true
         cors-configurations:
           '[/**]':
-            allowedOrigins:
-              - "http://localhost:3000"
-              - "http://localhost:4200"
-              - "http://localhost:5173"
+            allowedOriginPatterns:
+              - "*"
             allowedMethods:
               - "GET"
               - "POST"
@@ -25,29 +23,45 @@ spring:
             allowCredentials: true
       routes:
         - id: user-auth-service
-          uri: http://localhost:8086
+          uri: ${USER_SERVICE_URL:http://user-service:8086}
           predicates:
             - Path=/auth/**, /api/auth/**
         - id: user-profile-orders
-          uri: http://localhost:8086
+          uri: ${USER_SERVICE_URL:http://user-service:8086}
           predicates:
             - Path=/api/users/**
           filters:
             - JwtAuthenticationFilter
         - id: orchestrator-orders
-          uri: http://localhost:8081
+          uri: ${ORCHESTRATOR_URL:http://orchestrator-server:8081}
           predicates:
             - Path=/api/orders/**
           filters:
             - JwtAuthenticationFilter
         - id: orchestrator-ws
-          uri: ws://localhost:8081
+          uri: ${ORCHESTRATOR_WS_URL:ws://orchestrator-server:8081}
           predicates:
             - Path=/ws-teleflow/**
         - id: orchestrator-actuator
-          uri: http://localhost:8081
+          uri: ${ORCHESTRATOR_URL:http://orchestrator-server:8081}
           predicates:
             - Path=/actuator/**
+        - id: inventory-service
+          uri: ${INVENTORY_URL:http://inventory-service:8082}
+          predicates:
+            - Path=/api/inventory/**
+        - id: network-service
+          uri: ${NETWORK_URL:http://network-service:8083}
+          predicates:
+            - Path=/api/network/**
+        - id: billing-service
+          uri: ${BILLING_URL:http://billing-service:8084}
+          predicates:
+            - Path=/api/billing/**
+        - id: notification-service
+          uri: ${NOTIFICATION_URL:http://notification-service:8085}
+          predicates:
+            - Path=/api/notify/**
 
 jwt:
   secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
@@ -55,8 +69,6 @@ jwt:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_SERVER_URL:http://eureka-server:8761/eureka/}
     register-with-eureka: true
     fetch-registry: true
-
-
