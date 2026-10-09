@@ -47,6 +47,19 @@ public class InventoryController {
     }
 
     /**
+     * Chaos Mode Toggle for Hackathon Demos
+     */
+    @PostMapping("/chaos/toggle")
+    public ResponseEntity<Map<String, Object>> toggleChaos() {
+        boolean active = inventoryService.toggleChaosMode();
+        return ResponseEntity.ok(Map.of(
+                "service", "inventory-service",
+                "chaosModeActive", active,
+                "message", active ? "Chaos Mode ENABLED (Port reservation will fail)" : "Chaos Mode DISABLED (Happy path restored)"
+        ));
+    }
+
+    /**
      * Get reservation by trackingId.
      */
     @GetMapping("/reservations/{trackingId}")

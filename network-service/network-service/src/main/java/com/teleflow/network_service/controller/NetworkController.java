@@ -37,6 +37,19 @@ public class NetworkController {
         return ResponseEntity.ok(Map.of("trackingId", request.getTrackingId(), "status", "DEACTIVATED"));
     }
 
+    /**
+     * Chaos Mode Toggle for Hackathon Demos
+     */
+    @PostMapping("/chaos/toggle")
+    public ResponseEntity<Map<String, Object>> toggleChaos() {
+        boolean active = networkService.toggleChaosMode();
+        return ResponseEntity.ok(Map.of(
+                "service", "network-service",
+                "chaosModeActive", active,
+                "message", active ? "Chaos Mode ENABLED (Network slice will fail)" : "Chaos Mode DISABLED (Happy path restored)"
+        ));
+    }
+
     @GetMapping("/provisions/{trackingId}")
     public ResponseEntity<NetworkProvision> getByTrackingId(@PathVariable String trackingId) {
         return networkService.getProvision(trackingId)

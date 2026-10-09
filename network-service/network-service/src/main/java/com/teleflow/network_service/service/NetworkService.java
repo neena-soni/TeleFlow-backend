@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 @Service
@@ -22,6 +23,18 @@ import java.util.Optional;
 public class NetworkService {
 
     private final NetworkProvisionRepository repository;
+    private final AtomicBoolean chaosMode = new AtomicBoolean(false);
+
+    public boolean toggleChaosMode() {
+        boolean newState = !chaosMode.get();
+        chaosMode.set(newState);
+        log.warn("[NETWORK-CHAOS] Global chaos mode toggled to: {}", newState);
+        return newState;
+    }
+
+    public boolean isChaosMode() {
+        return chaosMode.get();
+    }
 
     @Transactional
     public NetworkActivateResponse activate(NetworkActivateRequest request) {
@@ -29,10 +42,11 @@ public class NetworkService {
                 request.getTrackingId(), request.getCustomerId(), request.getPlanName());
 
         // ① Chaos Mode / Failure Injection Hook for Hackathon Testing
-        if ((request.getPlanName() != null && request.getPlanName().toUpperCase().contains("CHAOS_FAIL_NET"))
+        if (chaosMode.get()
+                || (request.getPlanName() != null && request.getPlanName().toUpperCase().contains("CHAOS_FAIL_NET"))
                 || (request.getCustomerId() != null && request.getCustomerId().toUpperCase().startsWith("CHAOS_NET"))) {
             log.error("[NETWORK-CHAOS] Simulated network slice activation failure for trackingId={}", request.getTrackingId());
-            throw new RuntimeException("Simulated Failure: Optical/5G slice activation failed at sector controller.");
+            throw new RuntimeException("Simulated Failure (Chaos Mode): Optical/5G slice activation failed at sector controller.");
         }
 
         // ② Idempotency Check: Already provisioned?

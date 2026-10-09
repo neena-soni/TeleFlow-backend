@@ -17,6 +17,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -24,6 +26,18 @@ public class InventoryService {
 
     private final InventoryReservationRepository repository;
     private static final int TOTAL_POOL_CAPACITY = 1000;
+    private final AtomicBoolean chaosMode = new AtomicBoolean(false);
+
+    public boolean toggleChaosMode() {
+        boolean newState = !chaosMode.get();
+        chaosMode.set(newState);
+        log.warn("[INVENTORY-CHAOS] Global chaos mode toggled to: {}", newState);
+        return newState;
+    }
+
+    public boolean isChaosMode() {
+        return chaosMode.get();
+    }
 
     /**
      * Reserve / allocate physical network port and router slot for an order.
@@ -35,11 +49,12 @@ public class InventoryService {
                 request.getTrackingId(), request.getCustomerId(), request.getPlanName());
 
         // ① Chaos Simulation / Failure Injection Hook for Hackathon Demos
-        if (request.getPlanName() != null && request.getPlanName().toUpperCase().contains("CHAOS_FAIL_INV")
+        if (chaosMode.get()
+                || (request.getPlanName() != null && request.getPlanName().toUpperCase().contains("CHAOS_FAIL_INV"))
                 || (request.getCustomerId() != null && request.getCustomerId().toUpperCase().startsWith("CHAOS_INV"))
                 || (request.getPlanName() != null && request.getPlanName().equalsIgnoreCase("OUT_OF_STOCK"))) {
             log.error("[INVENTORY-CHAOS] Simulated out-of-stock trigger for trackingId={}", request.getTrackingId());
-            throw new InventoryOutOfStockException("Simulated Failure: No network ports available in zone for plan: " + request.getPlanName());
+            throw new InventoryOutOfStockException("Simulated Failure (Chaos Mode): No network ports available in zone for plan: " + request.getPlanName());
         }
 
         // ② Idempotency Check: Already reserved?
