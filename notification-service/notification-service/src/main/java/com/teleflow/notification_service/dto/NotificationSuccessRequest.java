@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class NotificationSuccessRequest {
     private String trackingId;
+    private String customerId;
     private String email;
     private String planName;
 }

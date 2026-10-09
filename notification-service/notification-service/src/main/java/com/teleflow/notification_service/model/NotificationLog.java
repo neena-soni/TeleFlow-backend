@@ -12,7 +12,8 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "notification_logs", indexes = {
     @Index(name = "idx_notif_tracking_id", columnList = "trackingId"),
-    @Index(name = "idx_notif_type", columnList = "notificationType")
+    @Index(name = "idx_notif_customer_id", columnList = "customerId"),
+    @Index(name = "idx_notif_target_role", columnList = "targetRole")
 })
 @Data
 @Builder
@@ -26,6 +27,12 @@ public class NotificationLog {
 
     @Column(nullable = false, length = 64)
     private String trackingId;
+
+    @Column(nullable = false, length = 64)
+    private String customerId;
+
+    @Column(nullable = false, length = 32)
+    private String targetRole; // ROLE_USER, ROLE_ADMIN
 
     @Column(length = 120)
     private String recipientEmail;

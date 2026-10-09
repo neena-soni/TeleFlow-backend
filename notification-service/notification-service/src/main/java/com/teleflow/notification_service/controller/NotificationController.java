@@ -35,6 +35,22 @@ public class NotificationController {
         return ResponseEntity.ok(Map.of("trackingId", request.getTrackingId(), "status", "SENT"));
     }
 
+    /**
+     * Customer Window / Dashboard: Fetch notifications for logged-in user
+     */
+    @GetMapping("/user/{customerId}")
+    public ResponseEntity<List<NotificationLog>> getUserNotifications(@PathVariable String customerId) {
+        return ResponseEntity.ok(notificationService.getUserNotifications(customerId));
+    }
+
+    /**
+     * Admin Dashboard: Fetch technical system audit alerts
+     */
+    @GetMapping("/admin")
+    public ResponseEntity<List<NotificationLog>> getAdminAlerts() {
+        return ResponseEntity.ok(notificationService.getAdminAlerts());
+    }
+
     @GetMapping("/logs/{trackingId}")
     public ResponseEntity<List<NotificationLog>> getLogsByTrackingId(@PathVariable String trackingId) {
         return ResponseEntity.ok(notificationService.getLogsByTrackingId(trackingId));

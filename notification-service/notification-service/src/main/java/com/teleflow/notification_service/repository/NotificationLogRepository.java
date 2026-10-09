@@ -11,6 +11,10 @@ public interface NotificationLogRepository extends JpaRepository<NotificationLog
 
     List<NotificationLog> findByTrackingId(String trackingId);
 
+    List<NotificationLog> findByCustomerIdOrderBySentAtDesc(String customerId);
+
+    List<NotificationLog> findByTargetRoleOrderBySentAtDesc(String targetRole);
+
     long countByNotificationType(String notificationType);
 
     List<NotificationLog> findTop50ByOrderBySentAtDesc();

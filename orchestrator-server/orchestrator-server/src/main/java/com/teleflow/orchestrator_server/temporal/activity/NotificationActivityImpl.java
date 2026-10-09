@@ -46,10 +46,16 @@ public class NotificationActivityImpl implements NotificationActivity {
         orderStatusService.markStepRunning(trackingId, StepName.NOTIFICATION);
 
         try {
+            String customerId = "CUST-DEFAULT";
+            try {
+                customerId = orderStatusService.getOrderByTrackingId(trackingId).getCustomerId();
+            } catch (Exception ignored) {}
+
             notificationWebClient.post()
                     .uri("/api/notify/success")
                     .bodyValue(Map.of(
                             "trackingId", trackingId,
+                            "customerId", customerId,
                             "email", customerEmail != null ? customerEmail : "",
                             "planName", planName
                     ))
@@ -84,10 +90,16 @@ public class NotificationActivityImpl implements NotificationActivity {
         log.info("[NOTIFICATION] sendFailure: trackingId={} failedStep={}", trackingId, failedStep);
 
         try {
+            String customerId = "CUST-DEFAULT";
+            try {
+                customerId = orderStatusService.getOrderByTrackingId(trackingId).getCustomerId();
+            } catch (Exception ignored) {}
+
             notificationWebClient.post()
                     .uri("/api/notify/failure")
                     .bodyValue(Map.of(
                             "trackingId", trackingId,
+                            "customerId", customerId,
                             "email", customerEmail != null ? customerEmail : "",
                             "failedStep", failedStep,
                             "reason", reason != null ? reason : "Unknown error"
