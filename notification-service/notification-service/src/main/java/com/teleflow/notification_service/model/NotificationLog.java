@@ -28,10 +28,10 @@ public class NotificationLog {
     @Column(nullable = false, length = 64)
     private String trackingId;
 
-    @Column(nullable = false, length = 64)
+    @Column(length = 64)
     private String customerId;
 
-    @Column(nullable = false, length = 32)
+    @Column(length = 32)
     private String targetRole; // ROLE_USER, ROLE_ADMIN
 
     @Column(length = 120)
